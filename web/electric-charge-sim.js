@@ -4,7 +4,9 @@
 // Coloumb's law
 // some constant / r^2
 
-var force_constant = 1;
+var force_constant = 1000;
+var mass_constant = 1;
+var time_constant = 1;
 
 var ElectricChargeSimulator = function() {
   "use strict";
@@ -19,6 +21,10 @@ var ElectricChargeSimulator = function() {
     particle.y = y;
     particle.xv = 0;
     particle.yv = 0;
+    particle.nx = 0;
+    particle.ny = 0;
+    particle.nxv = 0;
+    particle.nyv = 0;
     particles.push(particle);
   }
 
@@ -28,42 +34,77 @@ var ElectricChargeSimulator = function() {
 
     // first, find distance
     var distance = Math.sqrt(Math.pow(particleA.x - particleB.x, 2) +
-      Math.pow(particleB.y - particleB.y, 2));
+        Math.pow(particleA.y - particleB.y, 2));
 
     var force = force_constant / Math.pow(distance, 2);
 
-    return [force *
+    // b pushing on a
+    // var angle = Math.atan ( ( particleA.y - particleB.y ) / ( particleA.x - particleB.x ) );
+    var angle = Math.atan2 ( particleA.y - particleB.y, particleA.x - particleB.x );
 
+    return [force * Math.cos ( angle ), force * Math.sin ( angle ) ];
+  }
 
+  function applyForce ( particle, force ) {
+    // F = m * a, so a = F / m
+    // for now, let's just say Force = acceleration
+    // let's also say that we're working over one second, so velocity will change by force
 
-      // terrible name for a function!
-      function proceed() {
-        // 1. go through each particle, determine new forces on it from old forces
-        //
+    // first, let's do next velocity
+    particle.nxv = particle.xv + force[0];
+    particle.nyv = particle.yv + force[1];
 
+    // now, let's do position
+    particle.nx = particle.x + particle.nxv;
+    particle.ny = particle.y + particle.nyv;
+  }
 
+  // terrible name for a function!
+  function update() {
+    // go through each particle, calculating the next positions and velocities
+    _.each ( particles,
+        function ( particleA, keyA ) {
+          // determine force on particle
+          var netForce = [0,0];
+          // go through all other particles, add forces up
+          _.each ( particles,
+            function ( particleB, keyB ) {
+              if ( keyA !== keyB ) {
+                var force = forceBetweenTwo( particleA, particleB );
+                netForce[0] += force[0];
+                netForce[1] += force[1];
+              }
+            });
+          // apply net force to the particle, to change it's next velocity and position
+          applyForce ( particleA, netForce );
+        });
+    // go through each particle, moving next velocities to current velocities
+    _.each ( particles,
+        function ( particle ) {
+          particle.x = particle.nx;
+          particle.y = particle.ny;
+          particle.xv = particle.nxv;
+          particle.yv = particle.nyv;
+        });
+  };
 
+  function get_positions() {
+    var positions = [];
+    _.each(particles,
+        function(particle) {
+          positions.push([particle.x, particle.y]);
+        });
+    return positions;
+  }
 
-
-      }
-
-      function get_positions() {
-        var positions = [];
-        _.each(particles,
-          function(particle) {
-            positions.push([particle.x, particle.y]);
-          });
-        return positions;
-      }
-
-      return function(method) {
-        switch (method) {
-          case "get_positions":
-            return get_positions;
-          case "add_particle":
-            return add_particle;
-          case "proceed":
-            return proceed;
-        }
-      };
-    };
+  return function(method) {
+    switch (method) {
+      case "get_positions":
+        return get_positions;
+      case "add_particle":
+        return add_particle;
+      case "update":
+        return update;
+    }
+  };
+}

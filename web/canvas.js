@@ -7,8 +7,8 @@ var Canvas = function(element_to_attach_to) {
   var particles; // array of objects. each object has
   // a raphael, an x location, and y location
 
-  var width = 500;
-  var height = 500;
+  var width = 1000;
+  var height = 1000;
   var crosshair_length = 5;
 
   var paper = new Raphael(element_to_attach_to, width, height);
@@ -27,11 +27,7 @@ var Canvas = function(element_to_attach_to) {
   }
 
   function clear() {
-    _.each(particles,
-      function(particle) {
-        particle.raphael.remove();
-      });
-    particles = [];
+    paper.clear();
   }
 
   return function(method) {
