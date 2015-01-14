@@ -21,29 +21,32 @@ var canvas = Canvas(document.getElementById("canvas_container"));
 
 var sim = ElectricChargeSimulator();
 
-function putParticlesOnCanvas() {
+function putObjectsOnCanvas() {
   canvas("clear")();
   var positions = sim("get_positions")();
   _.each(positions,
       function(position) {
       canvas("add_particle")(position[0], position[1]);
       });
+  var lines = sim("get_lines")();
+  _.each(lines,
+      function(line) {
+      canvas("add_line")(line);
+      });
 }
 
 for ( var i = 0; i < 100; i++ ) {
-  sim("add_particle")(1000 * Math.random(), 1000*Math.random());
+  sim("add_particle")(500 + 200 * (0.5- Math.random()), 500 + 200 * (0.5 - Math.random()));
 }
 
-// sim("add_particle")(550, 550);
-// sim("add_particle")(450, 450);
-// sim("add_particle")(550, 450);
-// sim("add_particle")(450, 550);
-
-putParticlesOnCanvas();
+sim("add_line")(300,300,700,300);
+sim("add_line")(300,300,300,700);
+sim("add_line")(300,700,700,700);
+sim("add_line")(700,300,700,700);
 
 function update() {
   sim("update")();
-  putParticlesOnCanvas();
+  putObjectsOnCanvas();
 }
 
 window.setInterval( function() {update()}, 100);

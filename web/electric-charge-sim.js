@@ -14,6 +14,17 @@ var ElectricChargeSimulator = function() {
   var particles = []; // each particle has an x, y, xv (x velocity),
   // and yv (y velocity), nx, ny, nxv, and nyv
   //
+  //
+  var lines = [];
+
+  function add_line(x1, y1, x2, y2) {
+    var line = {};
+    line.x1 = x1;
+    line.y1 = y1;
+    line.x2 = x2;
+    line.y2 = y2;
+    lines.push(line);
+  }
 
   function add_particle(x, y) {
     var particle = {};
@@ -45,6 +56,10 @@ var ElectricChargeSimulator = function() {
     return [force * Math.cos ( angle ), force * Math.sin ( angle ) ];
   }
 
+  function collisionDistance ( particle, line ) {
+
+
+  // going to have to do wall detection!
   function applyForce ( particle, force ) {
     // F = m * a, so a = F / m
     // for now, let's just say Force = acceleration
@@ -54,7 +69,12 @@ var ElectricChargeSimulator = function() {
     particle.nxv = particle.xv + force[0];
     particle.nyv = particle.yv + force[1];
 
-    // now, let's do position
+    // is it going to run into any lines?
+
+    // 
+    
+
+    // now, let's do next position
     particle.nx = particle.x + particle.nxv;
     particle.ny = particle.y + particle.nyv;
   }
@@ -97,12 +117,25 @@ var ElectricChargeSimulator = function() {
     return positions;
   }
 
+  function get_lines() {
+    var l = [];
+    _.each(lines,
+        function(line) {
+          l.push([line.x1, line.y1, line.x2, line.y2]);
+        });
+    return l;
+  }
+
   return function(method) {
     switch (method) {
       case "get_positions":
         return get_positions;
+      case "get_lines":
+        return get_lines;
       case "add_particle":
         return add_particle;
+      case "add_line":
+        return add_line;
       case "update":
         return update;
     }
