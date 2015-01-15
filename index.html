@@ -2,57 +2,57 @@
 <html>
 
 <head>
-<title>Simulating Electric Charges</title>
-<script src="web/jquery-2.1.0.min.js"></script>
-<script src="web/fraction.js"></script>
-<script src="web/underscore.js"></script>
-<script type="text/javascript" src="object-pool.js"></script>
-<script src="web/raphael-min.js"></script>
-<script src="web/canvas.js"></script>
-<script src="web/electric-charge-sim.js"></script>
+  <title>Simulating Electric Charges</title>
+  <script src="web/jquery-2.1.0.min.js"></script>
+  <script src="web/fraction.js"></script>
+  <script src="web/underscore.js"></script>
+  <script type="text/javascript" src="object-pool.js"></script>
+  <script src="web/raphael-min.js"></script>
+  <script src="web/canvas.js"></script>
+  <script src="web/electric-charge-sim.js"></script>
 </head>
 
 <body>
-<h1></h1>
-<div id="canvas_container" style="float:left"></div>
+  <h1></h1>
+  <div id="canvas_container" style="float:left"></div>
 
-<script>
-var canvas = Canvas(document.getElementById("canvas_container"));
+  <script>
+    var canvas = Canvas(document.getElementById("canvas_container"));
 
-var sim = ElectricChargeSimulator();
+    var sim = ElectricChargeSimulator();
 
-function putObjectsOnCanvas() {
-  canvas("clear")();
-  var positions = sim("get_positions")();
-  _.each(positions,
-      function(position) {
-      canvas("add_particle")(position[0], position[1]);
-      });
-  var lines = sim("get_lines")();
-  _.each(lines,
-      function(line) {
-      canvas("add_line")(line);
-      });
-}
+    function putObjectsOnCanvas() {
+      canvas("clear")();
+      var positions = sim("get_positions")();
+      _.each(positions,
+        function(position) {
+          canvas("add_particle")(position[0], position[1]);
+        });
+      var lines = sim("get_lines")();
+      _.each(lines,
+        function(line) {
+          canvas("add_line")(line);
+        });
+    }
 
-for ( var i = 0; i < 100; i++ ) {
-  sim("add_particle")(500 + 200 * (0.5- Math.random()), 500 + 200 * (0.5 - Math.random()));
-}
+    for (var i = 0; i < 100; i++) {
+      sim("add_particle")(500 + 200 * (0.5 - Math.random()), 500 + 100 * (0.5 - Math.random()));
+    }
 
-sim("add_line")(300,300,700,300);
-sim("add_line")(300,300,300,700);
-sim("add_line")(300,700,700,700);
-sim("add_line")(700,300,700,700);
+    sim("add_line")(300, 300, 700, 300);
+    sim("add_line")(300, 300, 300, 700);
+    sim("add_line")(300, 700, 700, 700);
+    sim("add_line")(700, 300, 700, 700);
 
-function update() {
-  sim("update")();
-  putObjectsOnCanvas();
-}
+    function update() {
+      sim("update")();
+      putObjectsOnCanvas();
+    }
 
-window.setInterval( function() {update()}, 100);
-
-
-</script>
+    window.setInterval(function() {
+      update()
+    }, 10);
+  </script>
 
 </body>
 
